@@ -6,8 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \ToDo.isCompleted) private var toDos: [ToDo]
+    
     var body: some View {
         VStack {
             Image(systemName: "globe")
