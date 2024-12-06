@@ -16,13 +16,47 @@ struct ContentView: View {
     @State private var toDoTitle = ""
     
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            List {
+                ForEach(toDos) { toDo in
+                    HStack {
+                        Button {
+                            toDo.isCompleted.toggle()
+                        } label: {
+                            Image(systemName: toDo.isCompleted ? "checkmark.circle.fill" : "circle")
+                        }
+                        
+                        Text(toDo.title)
+                    }
+                }
+                .onDelete(perform: deleteToDos)
+            }
+            .navigationTitle("ToDo App")
+            .toolbar {
+                Button {
+                    isAlertShowing.toggle()
+                } label: {
+                    Image(systemName: "plus.circle")
+                }
+            }
+            .alert("Add ToDO", isPresented: $isAlertShowing) {
+                TextField("Enter ToDo", text: $toDoTitle)
+                
+                Button {
+                    modelContext.insert(ToDo(title: toDoTitle, isCompleted: false))
+                    
+                    toDoTitle = ""
+                } label: {
+                    Text("Add")
+                }
+                
+            }
+            .overlay {
+                if toDos.isEmpty {
+                    ContentUnavailableView("Nothing to do here.", systemImage: "checkmark.circle.fill")
+                }
+            }
         }
-        .padding()
     }
     
     func deleteToDos(_ indexSet: IndexSet) {
